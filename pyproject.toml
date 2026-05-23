@@ -10,3 +10,11 @@ dependencies = [
     "pymango>=0.1.1",
     "python-dotenv>=1.2.2",
 ]
+
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
