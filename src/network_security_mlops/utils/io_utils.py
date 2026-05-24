@@ -2,6 +2,7 @@ import sys
 import json
 import yaml
 import joblib
+import numpy as np
 from pathlib import Path
 from typing import Any
 
@@ -41,4 +42,55 @@ def write_yaml_file(file_path: Path, content: object, replace: bool = False) -> 
 
     except Exception as e:
         logger.exception("Failed to write YAML file")
+        raise NetworkSecurityException(e, sys)
+    
+
+def save_numpy_array_data(file_path: Path, array: np.ndarray) -> None:
+    """
+    Save numpy array to file
+    """
+    try:
+        # Create parent directory
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Save numpy array
+        with open(file_path, "wb") as file_obj:
+            np.save(file_obj, array)
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+
+
+def save_object(file_path: Path, obj: object) -> None:
+    """
+    Save object using joblib
+    """
+    try:
+        logger.info(f"Saving object at: {file_path}")
+
+        # Create parent directory
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+
+        # Save object
+        joblib.dump(obj, file_path)
+
+        logger.info("Object saved successfully")
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+
+
+def load_object(file_path: Path) -> object:
+    """
+    Load joblib object
+    """
+    try:
+        # Check file existence
+        if not file_path.exists():
+            raise FileNotFoundError(f"File not found: {file_path}")
+
+        # Load object
+        return joblib.load(file_path)
+
+    except Exception as e:
         raise NetworkSecurityException(e, sys)
