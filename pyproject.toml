@@ -11,6 +11,7 @@ dependencies = [
     "pymango>=0.1.1",
     "pymongo[srv]==3.12",
     "python-dotenv>=1.2.2",
+    "scikit-learn>=1.8.0",
 ]
 
 
