@@ -8,6 +8,8 @@ from typing import Any
 
 from network_security_mlops.utils.logger import logger
 from network_security_mlops.utils.exception import NetworkSecurityException
+from sklearn.model_selection import GridSearchCV
+from sklearn.metrics import accuracy_score
 
 
 def read_yaml_file(file_path: Path) -> dict:
@@ -91,6 +93,75 @@ def load_object(file_path: Path) -> object:
 
         # Load object
         return joblib.load(file_path)
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+    
+def load_numpy_array_data(file_path: Path) -> np.ndarray:
+    """
+    load numpy array data from file
+    file_path: str location of file to load
+    return: np.array data loaded
+    """
+    try:
+        # Load numpy array
+        with open(file_path, "rb") as file_obj:
+            return np.load(file_obj)
+
+    except Exception as e:
+        raise NetworkSecurityException(e, sys)
+    
+
+def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param: dict) -> dict:
+    """
+    Train and evaluate multiple models
+    """
+    try:
+        report = {}
+
+        # Iterate through all models
+        for model_name, model in models.items():
+            logger.info(f"Training model: {model_name}")
+
+            # Get hyperparameters
+            params = param.get(model_name, {})
+
+            # Apply GridSearchCV if parameters exist
+            if params:
+                grid_search = GridSearchCV(
+                    estimator=model,
+                    param_grid=params,
+                    cv=3,
+                    n_jobs=-1,
+                    verbose=1
+                )
+                grid_search.fit(X_train, y_train)
+
+                # Set best parameters
+                model.set_params(**grid_search.best_params_)
+
+            # Train model
+            model.fit(X_train, y_train)
+
+            # Predictions
+            y_train_pred = model.predict(X_train)
+            y_test_pred = model.predict(X_test)
+
+            # Accuracy scores
+            train_model_score = accuracy_score(y_train, y_train_pred)
+
+            test_model_score = accuracy_score(y_test, y_test_pred)
+
+            logger.info(
+                f"{model_name} -> "
+                f"Train Accuracy: {train_model_score:.4f}, "
+                f"Test Accuracy: {test_model_score:.4f}"
+            )
+
+            # Store test accuracy
+            report[model_name] = test_model_score
+
+        return report
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)

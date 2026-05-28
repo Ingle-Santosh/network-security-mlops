@@ -18,17 +18,10 @@ class TrainingPipelineConfig:
 class DataIngestionConfig:
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
         # Base directory for ingestion
-        self.data_ingestion_dir: Path = (
-            training_pipeline_config.artifact_dir / 
-            training_pipeline.DATA_INGESTION_DIR_NAME
-        )
+        self.data_ingestion_dir: Path = (training_pipeline_config.artifact_dir / training_pipeline.DATA_INGESTION_DIR_NAME)
         
         # Feature store path
-        self.feature_store_file_path: Path = (
-            self.data_ingestion_dir / 
-            training_pipeline.DATA_INGESTION_FEATURE_STORE_DIR / 
-            training_pipeline.FILE_NAME
-        )
+        self.feature_store_file_path: Path = (self.data_ingestion_dir / training_pipeline.DATA_INGESTION_FEATURE_STORE_DIR / training_pipeline.FILE_NAME)
         
         # Ingested (Train/Test) directory
         ingested_dir = self.data_ingestion_dir / training_pipeline.DATA_INGESTION_INGESTED_DIR
@@ -46,7 +39,7 @@ class DataValidationConfig:
     def __init__(self, training_pipeline_config: TrainingPipelineConfig):
 
         # Root validation directory
-        self.data_validation_dir: Path = training_pipeline_config.artifact_dir / training_pipeline.DATA_VALIDATION_DIR_NAME
+        self.data_validation_dir: Path = (training_pipeline_config.artifact_dir / training_pipeline.DATA_VALIDATION_DIR_NAME)
 
         # Valid data directory
         self.valid_data_dir: Path = self.data_validation_dir / training_pipeline.DATA_VALIDATION_VALID_DIR
@@ -94,3 +87,19 @@ class DataTransformationConfig:
             / training_pipeline.DATA_TRANSFORMATION_TRANSFORMED_OBJECT_DIR
             / training_pipeline.PREPROCESSING_OBJECT_FILE_NAME
         )
+
+
+class ModelTrainerConfig:
+    def __init__(self,training_pipeline_config: TrainingPipelineConfig):
+        # Root model trainer directory
+        self.model_trainer_dir: Path = (training_pipeline_config.artifact_dir / training_pipeline.MODEL_TRAINER_DIR_NAME)
+
+        # Trained model file path
+        self.trained_model_file_path: Path = (self.model_trainer_dir / training_pipeline.MODEL_TRAINER_TRAINED_MODEL_DIR / training_pipeline.MODEL_FILE_NAME)
+
+        # Expected model accuracy
+        self.expected_accuracy: float = (training_pipeline.MODEL_TRAINER_EXPECTED_SCORE)
+
+        # Allowed train-test accuracy gap
+        self.overfitting_underfitting_threshold: float = (training_pipeline.MODEL_TRAINER_OVER_FIITING_UNDER_FITTING_THRESHOLD)
+        
