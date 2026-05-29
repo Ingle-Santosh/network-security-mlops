@@ -14,9 +14,7 @@ LOG_FILE_PATH = LOG_DIR / LOG_FILE
 
 # 2. Configuration
 LOG_FORMAT = (
-    "[%(asctime)s] "
-    "%(filename)s:%(lineno)d "
-    "%(name)s - %(levelname)s - %(message)s"
+    "[%(asctime)s] %(filename)s:%(lineno)d %(name)s - %(levelname)s - %(message)s"
 )
 
 logger = logging.getLogger("Network_security_mlops")
@@ -24,7 +22,6 @@ logger.setLevel(logging.INFO)
 
 # 3. Handler Setup
 if not logger.handlers:
-
     file_handler = logging.FileHandler(LOG_FILE_PATH)
     console_handler = logging.StreamHandler(sys.stdout)
 

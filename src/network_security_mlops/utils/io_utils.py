@@ -1,10 +1,8 @@
 import sys
-import json
 import yaml
 import joblib
 import numpy as np
 from pathlib import Path
-from typing import Any
 
 from network_security_mlops.utils.logger import logger
 from network_security_mlops.utils.exception import NetworkSecurityException
@@ -25,7 +23,8 @@ def read_yaml_file(file_path: Path) -> dict:
 
     except Exception as e:
         raise NetworkSecurityException(e, sys) from e
-    
+
+
 def write_yaml_file(file_path: Path, content: object, replace: bool = False) -> None:
     """
     Write content into YAML file
@@ -45,7 +44,7 @@ def write_yaml_file(file_path: Path, content: object, replace: bool = False) -> 
     except Exception as e:
         logger.exception("Failed to write YAML file")
         raise NetworkSecurityException(e, sys)
-    
+
 
 def save_numpy_array_data(file_path: Path, array: np.ndarray) -> None:
     """
@@ -96,7 +95,8 @@ def load_object(file_path: Path) -> object:
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
-    
+
+
 def load_numpy_array_data(file_path: Path) -> np.ndarray:
     """
     load numpy array data from file
@@ -110,9 +110,11 @@ def load_numpy_array_data(file_path: Path) -> np.ndarray:
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
-    
 
-def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param: dict) -> dict:
+
+def evaluate_models(
+    X_train, y_train, X_test, y_test, models: dict, param: dict
+) -> dict:
     """
     Train and evaluate multiple models
     """
@@ -129,11 +131,7 @@ def evaluate_models(X_train, y_train, X_test, y_test, models: dict, param: dict)
             # Apply GridSearchCV if parameters exist
             if params:
                 grid_search = GridSearchCV(
-                    estimator=model,
-                    param_grid=params,
-                    cv=3,
-                    n_jobs=-1,
-                    verbose=1
+                    estimator=model, param_grid=params, cv=3, n_jobs=-1, verbose=1
                 )
                 grid_search.fit(X_train, y_train)
 

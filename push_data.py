@@ -16,6 +16,7 @@ load_dotenv()
 MONGO_DB_URL = os.getenv("MONGO_DB_URL")
 ca = certifi.where()
 
+
 class NetworkDataExtract:
     """
     Extract data from CSV and insert into MongoDB.
@@ -24,15 +25,10 @@ class NetworkDataExtract:
     def __init__(self) -> None:
         try:
             if MONGO_DB_URL is None:
-                raise Exception(
-                    "MongoDB URL not found in environment variables."
-                )
+                raise Exception("MongoDB URL not found in environment variables.")
 
             self.mongo_client = pymongo.MongoClient(
-                MONGO_DB_URL,
-                tls=True,
-                tlsCAFile=ca,
-                serverSelectionTimeoutMS=5000
+                MONGO_DB_URL, tls=True, tlsCAFile=ca, serverSelectionTimeoutMS=5000
             )
 
             # Validate MongoDB connection
@@ -68,9 +64,7 @@ class NetworkDataExtract:
             data.reset_index(drop=True, inplace=True)
 
             # Convert dataframe to JSON records
-            records = json.loads(
-                data.to_json(orient="records")
-            )
+            records = json.loads(data.to_json(orient="records"))
 
             logger.info(
                 f"Successfully converted CSV to JSON records. "
@@ -83,10 +77,7 @@ class NetworkDataExtract:
             raise NetworkSecurityException(e, sys)
 
     def insert_data_to_mongodb(
-        self,
-        records: List[dict],
-        database_name: str,
-        collection_name: str
+        self, records: List[dict], database_name: str, collection_name: str
     ) -> int:
         """
         Insert records into MongoDB collection.
@@ -117,9 +108,7 @@ class NetworkDataExtract:
 
             inserted_count = len(result.inserted_ids)
 
-            logger.info(
-                f"Successfully inserted {inserted_count} records into MongoDB."
-            )
+            logger.info(f"Successfully inserted {inserted_count} records into MongoDB.")
 
             return inserted_count
 
@@ -139,15 +128,16 @@ class NetworkDataExtract:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
+
 # if __name__ == '__main__':
 #     # Initialize Path objects
 #     # This works regardless of whether you use \ or /
 #     BASE_DIR = Path(__file__).resolve().parent
 #     DATA_FILE = BASE_DIR / "Network_Data" / "phisingData.csv"
-    
+
 #     DATABASE_NAME = "network_security"
 #     COLLECTION_NAME = "phishing_data"
-    
+
 #     try:
 #         extractor = NetworkDataExtract()
 #         records = extractor.csv_to_json_converter(file_path=DATA_FILE)
@@ -155,4 +145,3 @@ class NetworkDataExtract:
 #         logger.info(f"Successfully inserted {records_count} records.")
 #     except Exception as e:
 #         logger.error(f"Ingestion process failed: {e}")
-

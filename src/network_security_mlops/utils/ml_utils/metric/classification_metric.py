@@ -1,16 +1,12 @@
 import sys
 
-from sklearn.metrics import (
-    f1_score,
-    precision_score,
-    recall_score
-)
+from sklearn.metrics import f1_score, precision_score, recall_score
 
 from network_security_mlops.entity.artifact_entity import ClassificationMetricArtifact
-from network_security_mlops.utils.exception import  NetworkSecurityException
+from network_security_mlops.utils.exception import NetworkSecurityException
 
 
-def get_classification_score(y_true,y_pred) -> ClassificationMetricArtifact:
+def get_classification_score(y_true, y_pred) -> ClassificationMetricArtifact:
     """
     Calculate classification metrics
     """
@@ -25,12 +21,10 @@ def get_classification_score(y_true,y_pred) -> ClassificationMetricArtifact:
         model_recall_score = recall_score(y_true, y_pred)
 
         # Create metric artifact
-        classification_metric = (
-            ClassificationMetricArtifact(
-                f1_score=model_f1_score,
-                precision_score=model_precision_score,
-                recall_score=model_recall_score
-            )
+        classification_metric = ClassificationMetricArtifact(
+            f1_score=model_f1_score,
+            precision_score=model_precision_score,
+            recall_score=model_recall_score,
         )
 
         return classification_metric

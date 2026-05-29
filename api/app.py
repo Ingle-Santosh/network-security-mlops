@@ -3,7 +3,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.templating import Jinja2Templates
 
 from network_security_mlops.utils.logger import logger
 from network_security_mlops.utils.io_utils import load_object
@@ -24,10 +23,10 @@ async def lifespan(app: FastAPI):
     yield
     # ── shutdown ──────────────────────────────────────────────────────
     logger.info("Shutting down")
- 
- 
+
+
 app = FastAPI(lifespan=lifespan)
- 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,7 +34,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
- 
+
 app.include_router(health.router)
 app.include_router(train.router)
 app.include_router(predict.router)

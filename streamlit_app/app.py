@@ -1,4 +1,3 @@
-import io
 import os
 
 import pandas as pd
@@ -100,7 +99,9 @@ if uploaded_file is not None:
                     )
 
                 else:
-                    st.error(f"Prediction failed (HTTP {resp.status_code}): {resp.text}")
+                    st.error(
+                        f"Prediction failed (HTTP {resp.status_code}): {resp.text}"
+                    )
 
             except Exception as e:
                 st.error(f"Could not reach API: {e}")

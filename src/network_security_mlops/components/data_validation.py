@@ -1,4 +1,7 @@
-from network_security_mlops.entity.artifact_entity import DataIngestionArtifact, DataValidationArtifact
+from network_security_mlops.entity.artifact_entity import (
+    DataIngestionArtifact,
+    DataValidationArtifact,
+)
 from network_security_mlops.entity.config_entity import DataValidationConfig
 from network_security_mlops.utils.logger import logger
 from network_security_mlops.utils.exception import NetworkSecurityException
@@ -10,8 +13,13 @@ from pathlib import Path
 from network_security_mlops.constant.training_pipeline import SCHEMA_FILE_PATH
 from network_security_mlops.utils.io_utils import read_yaml_file, write_yaml_file
 
+
 class DataValidation:
-    def __init__(self, data_ingestion_artifact: DataIngestionArtifact, data_validation_config: DataValidationConfig):
+    def __init__(
+        self,
+        data_ingestion_artifact: DataIngestionArtifact,
+        data_validation_config: DataValidationConfig,
+    ):
         try:
             self.data_ingestion_artifact = data_ingestion_artifact
             self.data_validation_config = data_validation_config
@@ -49,7 +57,9 @@ class DataValidation:
         except Exception as e:
             raise NetworkSecurityException(e, sys)
 
-    def detect_dataset_drift(self, base_df: pd.DataFrame, current_df: pd.DataFrame, threshold: float = 0.05) -> bool:
+    def detect_dataset_drift(
+        self, base_df: pd.DataFrame, current_df: pd.DataFrame, threshold: float = 0.05
+    ) -> bool:
         """
         Detect dataset drift using KS test
         """
@@ -58,7 +68,6 @@ class DataValidation:
             report = {}
 
             for column in base_df.columns:
-
                 # Remove null values before KS test
                 d1 = base_df[column].dropna()
                 d2 = current_df[column].dropna()
@@ -72,11 +81,13 @@ class DataValidation:
 
                 report[column] = {
                     "p_value": float(test_result.pvalue),
-                    "drift_status": drift_found
+                    "drift_status": drift_found,
                 }
 
             # Get drift report path
-            drift_report_file_path: Path = (self.data_validation_config.drift_report_file_path)
+            drift_report_file_path: Path = (
+                self.data_validation_config.drift_report_file_path
+            )
 
             # Create parent directory
             drift_report_file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -99,7 +110,9 @@ class DataValidation:
             logger.info("Starting data validation")
 
             # Read train and test datasets
-            train_dataframe = self.read_data(self.data_ingestion_artifact.trained_file_path)
+            train_dataframe = self.read_data(
+                self.data_ingestion_artifact.trained_file_path
+            )
             test_dataframe = self.read_data(self.data_ingestion_artifact.test_file_path)
 
             # Validate train columns
@@ -115,27 +128,43 @@ class DataValidation:
                 raise Exception("Test dataframe does not contain all required columns")
 
             # Detect data drift
-            drift_validation_status = self.detect_dataset_drift(base_df=train_dataframe, current_df=test_dataframe)
+            drift_validation_status = self.detect_dataset_drift(
+                base_df=train_dataframe, current_df=test_dataframe
+            )
 
             # Create valid data directory
-            self.data_validation_config.valid_train_file_path.parent.mkdir(parents=True, exist_ok=True)
+            self.data_validation_config.valid_train_file_path.parent.mkdir(
+                parents=True, exist_ok=True
+            )
 
             # Save validated train dataset
-            train_dataframe.to_csv(self.data_validation_config.valid_train_file_path, index=False, header=True)
+            train_dataframe.to_csv(
+                self.data_validation_config.valid_train_file_path,
+                index=False,
+                header=True,
+            )
 
             # Save validated test dataset
-            test_dataframe.to_csv(self.data_validation_config.valid_test_file_path, index=False, header=True)
+            test_dataframe.to_csv(
+                self.data_validation_config.valid_test_file_path,
+                index=False,
+                header=True,
+            )
 
             logger.info("Data validation completed")
 
             # Create validation artifact
             data_validation_artifact = DataValidationArtifact(
                 drift_validation_status=drift_validation_status,
-                valid_train_file_path=(self.data_validation_config.valid_train_file_path),
+                valid_train_file_path=(
+                    self.data_validation_config.valid_train_file_path
+                ),
                 valid_test_file_path=(self.data_validation_config.valid_test_file_path),
                 invalid_train_file_path=None,
                 invalid_test_file_path=None,
-                drift_report_file_path=(self.data_validation_config.drift_report_file_path)
+                drift_report_file_path=(
+                    self.data_validation_config.drift_report_file_path
+                ),
             )
 
             return data_validation_artifact

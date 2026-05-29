@@ -1,15 +1,8 @@
-from network_security_mlops.components.data_ingestion import DataIngestion
-from network_security_mlops.components.data_validation import DataValidation
-from network_security_mlops.components.data_transformation import DataTransformation
 from network_security_mlops.utils.logger import logger
 from network_security_mlops.utils.exception import NetworkSecurityException
-from network_security_mlops.entity.config_entity import DataIngestionConfig, DataValidationConfig, DataTransformationConfig, ModelTrainerConfig
-from network_security_mlops.entity.config_entity import TrainingPipelineConfig
-from network_security_mlops.components.model_trainer import ModelTrainer
 from pipelines.training_pipeline import TrainingPipeline
 
 import sys
-import uvicorn
 
 
 if __name__ == "__main__":
@@ -23,7 +16,6 @@ if __name__ == "__main__":
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
-
 
 
 # if __name__ == "__main__":
@@ -71,6 +63,3 @@ if __name__ == "__main__":
 #     except Exception as e:
 #         logger.exception("Pipeline execution failed")
 #         raise NetworkSecurityException(e, sys)
-    
-
-

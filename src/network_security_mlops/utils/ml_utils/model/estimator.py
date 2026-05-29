@@ -2,9 +2,7 @@ import sys
 
 import pandas as pd
 
-from network_security_mlops.utils.exception import (
-    NetworkSecurityException
-)
+from network_security_mlops.utils.exception import NetworkSecurityException
 
 
 class NetworkModel:

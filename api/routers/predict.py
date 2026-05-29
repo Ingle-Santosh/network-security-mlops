@@ -32,13 +32,15 @@ async def predict_route(request: Request, file: UploadFile = File(...)):
         logger.info("Prediction saved to %s", output_path)
 
         # ── return JSON instead of Jinja2 template ────────────────────
-        return JSONResponse(content={
-            "status": "success",
-            "total_records": len(dataframe),
-            "output_file": str(output_path),
-            "predictions": dataframe["predicted_column"].tolist(),
-            "data": dataframe.to_dict(orient="records"),
-        })
+        return JSONResponse(
+            content={
+                "status": "success",
+                "total_records": len(dataframe),
+                "output_file": str(output_path),
+                "predictions": dataframe["predicted_column"].tolist(),
+                "data": dataframe.to_dict(orient="records"),
+            }
+        )
 
     except Exception as e:
         raise NetworkSecurityException(e, sys)
