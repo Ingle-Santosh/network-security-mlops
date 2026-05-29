@@ -1,0 +1,30 @@
+services:
+  # ── FastAPI backend ──────────────────────────────────────────────────────────
+  - type: web
+    name: netsec-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile.api
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URL_KEY
+        sync: false           # set manually in Render dashboard (secret)
+      - key: MLFLOW_TRACKING_URI
+        sync: false           # your DagsHub MLflow URI
+      - key: PYTHONUNBUFFERED
+        value: "1"
+
+  # ── Streamlit frontend ───────────────────────────────────────────────────────
+  - type: web
+    name: netsec-ui
+    runtime: docker
+    dockerfilePath: ./Dockerfile.ui
+    plan: free
+    envVars:
+      - key: API_BASE_URL
+        fromService:
+          name: netsec-api
+          type: web
+          property: host          # Render auto-injects the API's internal URL
+      - key: PYTHONUNBUFFERED
+        value: "1"

@@ -24,7 +24,7 @@ from network_security_mlops.entity.artifact_entity import (
     ModelTrainerArtifact
 )
 
-#from network_security_mlops.cloud.s3_syncer import S3Sync
+#from network_security_mlops.connectors.s3_syncer import S3Sync
 
 # from network_security_mlops.constant.training_pipeline import (
 #     TRAINING_BUCKET_NAME

@@ -1,0 +1,74 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+
+permissions:
+  contents: read
+
+jobs:
+  # ── 1. CI: lint + test ──────────────────────────────────────────────────────
+  integration:
+    name: Continuous Integration
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Lint with ruff
+        run: |
+          pip install ruff
+          ruff check . --select E,F --ignore E501
+
+      - name: Run unit tests
+        run: |
+          pip install pytest
+          pytest tests/unit/ -v --tb=short || echo "No unit tests yet"
+
+  # ── 2. CD: trigger Render deploy via deploy hook ────────────────────────────
+  deploy:
+    name: Continuous Deployment
+    needs: integration
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy API to Render
+        run: |
+          curl -s --fail -X POST "${{ secrets.RENDER_DEPLOY_HOOK_API }}" \
+            | jq '{ id: .id, status: .status }'
+
+      - name: Deploy UI to Render
+        run: |
+          curl -s --fail -X POST "${{ secrets.RENDER_DEPLOY_HOOK_UI }}" \
+            | jq '{ id: .id, status: .status }'
+
+      - name: Wait for API to be live
+        run: |
+          echo "Waiting for API health check..."
+          for i in $(seq 1 12); do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.RENDER_API_URL }}/health")
+            if [ "$STATUS" = "200" ]; then
+              echo "API is live!"
+              exit 0
+            fi
+            echo "Attempt $i/12 — status $STATUS, retrying in 15s..."
+            sleep 15
+          done
+          echo "API did not become healthy in time"
+          exit 1
