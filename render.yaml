@@ -11,6 +11,10 @@ services:
         sync: false           # set manually in Render dashboard (secret)
       - key: MLFLOW_TRACKING_URI
         sync: false           # your DagsHub MLflow URI
+      - key: MLFLOW_TRACKING_USERNAME
+        sync: false
+      - key: MLFLOW_TRACKING_PASSWORD
+        sync: false
       - key: PYTHONUNBUFFERED
         value: "1"
 
