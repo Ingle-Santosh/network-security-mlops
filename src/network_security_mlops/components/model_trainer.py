@@ -74,7 +74,9 @@ class ModelTrainer:
     def track_mlflow(self, best_model, classification_metric) -> None:
         """Track metrics and model using MLflow"""
         try:
-            mlflow.set_registry_uri(MLFLOW_TRACKING_URI)
+            mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
+            if mlflow_uri:
+                mlflow.set_registry_uri(mlflow_uri)
             # tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
             with mlflow.start_run():
