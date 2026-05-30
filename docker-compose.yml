@@ -4,17 +4,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.api
+
     container_name: netsec_api
+
     restart: unless-stopped
+
     ports:
       - "8000:8000"
+
     env_file:
-      - .env                        # MONGODB_URL_KEY, MLFLOW_TRACKING_URI, AWS_* etc.
+      - .env
+
     volumes:
-      - final_model:/app/final_model          # trained model shared with streamlit
       - prediction_output:/app/prediction_output
       - artifacts:/app/Artifacts
       - logs:/app/logs
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 30s
@@ -26,21 +31,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.ui
+
     container_name: netsec_streamlit
+
     restart: unless-stopped
+
     ports:
       - "8501:8501"
+
     environment:
-      - API_BASE_URL=http://api:8000   # internal docker network — NOT localhost
+      API_BASE_URL: http://api:8000
+
     depends_on:
       api:
-        condition: service_healthy    # wait until /health passes before starting UI
-    volumes:
-      - prediction_output:/app/prediction_output  # optional: UI can read output files
+        condition: service_healthy
 
-# ── named volumes (persist across container restarts) ────────────────────────
 volumes:
-  final_model:
   prediction_output:
   artifacts:
   logs:

@@ -35,18 +35,28 @@ load_dotenv()
 
 
 # MLflow configuration
-dagshub.init(
-    repo_owner="inglesantosh09", repo_name="network-security-mlops", mlflow=True
-)
-# Read MLflow credentials from .env
-MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
-MLFLOW_TRACKING_USERNAME = os.getenv("MLFLOW_TRACKING_USERNAME")
-MLFLOW_TRACKING_PASSWORD = os.getenv("MLFLOW_TRACKING_PASSWORD")
+if os.getenv("ENABLE_MLFLOW", "false").lower() == "true":
 
-# Set MLflow environment variables
-os.environ["MLFLOW_TRACKING_URI"] = MLFLOW_TRACKING_URI
-os.environ["MLFLOW_TRACKING_USERNAME"] = MLFLOW_TRACKING_USERNAME
-os.environ["MLFLOW_TRACKING_PASSWORD"] = MLFLOW_TRACKING_PASSWORD
+    dagshub.init(
+        repo_owner="inglesantosh09",
+        repo_name="network-security-mlops",
+        mlflow=True
+    )
+def setup_mlflow():
+    mlflow_uri = os.getenv("MLFLOW_TRACKING_URI")
+    mlflow_user = os.getenv("MLFLOW_TRACKING_USERNAME")
+    mlflow_password = os.getenv("MLFLOW_TRACKING_PASSWORD")
+
+    if mlflow_uri:
+        os.environ["MLFLOW_TRACKING_URI"] = mlflow_uri
+
+    if mlflow_user:
+        os.environ["MLFLOW_TRACKING_USERNAME"] = mlflow_user
+
+    if mlflow_password:
+        os.environ["MLFLOW_TRACKING_PASSWORD"] = mlflow_password
+
+setup_mlflow()
 
 
 class ModelTrainer:
